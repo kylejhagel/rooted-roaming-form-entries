@@ -13,6 +13,7 @@ command -v zip >/dev/null || { echo "zip required" >&2; exit 1; }
 mkdir -p dist
 name="rooted-roaming-form-entries"
 out="dist/${name}-${version}.zip"
+output_path="$(pwd)/$out"
 rm -f "$out"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -25,6 +26,6 @@ done
 # Remove known local/sensitive/build artifacts from copied allowlisted directories.
 find "$tmp/$name" -type d \( -name .git -o -name node_modules -o -name tests -o -name test -o -name .github -o -name secrets -o -name backups -o -name exports -o -name submissions \) -prune -exec rm -rf {} +
 find "$tmp/$name" -type f \( -name '*.log' -o -name '*.sql' -o -name '*.csv' -o -name '*.xlsx' -o -name '*.env' -o -name '.env*' -o -name 'wp-config.php' -o -name 'auth.json' \) -delete
-(cd "$tmp" && zip -q -r "$OLDPWD/$out" "$name")
+(cd "$tmp" && zip -q -r "$output_path" "$name")
 unzip -t "$out" >/dev/null
 echo "Created $out"
