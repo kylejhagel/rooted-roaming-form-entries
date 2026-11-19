@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**', 'fix/**', 'refactor/**']
   pull_request:
   workflow_dispatch:
 
@@ -11,16 +11,30 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2', '8.3']
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+          coverage: none
       - name: Verify repository safety
         run: bash scripts/check-repository.sh
-      - name: PHP syntax (if plugin source exists)
+      - name: PHP syntax
         run: |
-          if find . -type f -name '*.php' -not -path './vendor/*' -print -quit | grep -q .; then
-            find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
-          else
-            echo "No plugin PHP source imported yet; syntax check deferred."
+          test -f rooted-roaming-form-entries.php
+          find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -r -n1 php -l
+      - name: Build and inspect WordPress installation ZIP
+        run: |
+          bash scripts/package.sh 0.1.1
+          unzip -l dist/rooted-roaming-form-entries-0.1.1.zip
+          unzip -Z1 dist/rooted-roaming-form-entries-0.1.1.zip | grep -qx 'rooted-roaming-form-entries/rooted-roaming-form-entries.php'
+          if unzip -Z1 dist/rooted-roaming-form-entries-0.1.1.zip | grep -E '(^|/)(\.env|\.git|tests|secrets|exports|submissions)(/|$)|\.(csv|sql|log)$'; then
+            echo 'Disallowed release content' >&2; exit 1
           fi
