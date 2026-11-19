@@ -1,0 +1,53 @@
+# Local WordPress / MAMP environments
+.env
+.env.*
+!.env.example
+wp-config.php
+wp-config-local.php
+*.local.php
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+node_modules/
+vendor/
+coverage/
+.phpunit.result.cache
+.phpunit.cache/
+.phpunit-watcher.yml
+*.log
+npm-debug.log*
+.DS_Store
+# Build output and archives
+dist/
+build/
+*.zip
+# Entries / exports / personal data
+exports/
+export/
+entries/
+submissions/
+private/
+backups/
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.jsonl
+*.ndjson
+# Local credential files
+auth.json
+.credentials/
+secrets/
+*.pem
+*.key
+id_rsa
+id_ed25519
+# Do not commit user-generated WordPress content
+wp-content/uploads/
