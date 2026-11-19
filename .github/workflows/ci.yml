@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify repository safety
+        run: bash scripts/check-repository.sh
+      - name: PHP syntax (if plugin source exists)
+        run: |
+          if find . -type f -name '*.php' -not -path './vendor/*' -print -quit | grep -q .; then
+            find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+          else
+            echo "No plugin PHP source imported yet; syntax check deferred."
+          fi
